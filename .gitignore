@@ -26,3 +26,8 @@ replay_pid*
 .idea/
 .gradle/
 build/
+/spring-graalvm/build/
+/quarkus-graalvm/build/
+
+/spring-graalvm/.gradle/
+/quarkus-graalvm/.gradle/
