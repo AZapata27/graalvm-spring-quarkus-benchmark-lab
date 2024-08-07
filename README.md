@@ -8,9 +8,10 @@ The goal of this project is to evaluate the benefits and challenges of native im
 
 ## Projects
 
-- [Project 1]: Brief description
-- [Project 2]: Brief description
-- [Add more as needed]
+- **[quarkus-native](https://github.com/AZapata27/graalvm-spring-quarkus-benchmark-lab)/quarkus-native)**: Adds support for Quarkus Native using GraalVM, enabling the application to be compiled and run as a native binary, improving startup time and memory usage.
+- **[quarkus-reactive-native](https://github.com/AZapata27/quarkus-reactive-native)**: Implements reactive programming with Quarkus, including reactive RESTful endpoints, services, and repositories using Uni and Multi, enhancing the application's reactive capabilities.
+- **[spring-native](https://github.com/AZapata27/spring-native)**: Adds support for Spring Native with GraalVM, allowing the application to be compiled and run as a native binary, improving startup time and memory usage.
+- **[spring-webflux-native](https://github.com/AZapata27/spring-webflux-native)**: Introduces reactive programming with Spring WebFlux, including reactive endpoints using Flux and Mono, a reactive repository with R2DBC, and Flyway for database migrations, enhancing the application's reactive capabilities and ensuring smooth database migrations.
 
 ## Metrics
 
