@@ -3,13 +3,8 @@ package co.example.listener;
 import co.example.model.Cart;
 import co.example.service.CartService;
 import io.smallrye.mutiny.Uni;
-import io.smallrye.reactive.messaging.kafka.KafkaRecord;
 import jakarta.enterprise.context.ApplicationScoped;
 import lombok.RequiredArgsConstructor;
-import org.apache.kafka.common.header.Headers;
-import org.eclipse.microprofile.reactive.messaging.Incoming;
-import org.eclipse.microprofile.reactive.messaging.Message;
-import org.eclipse.microprofile.reactive.messaging.Outgoing;
 
 import java.util.List;
 import java.util.concurrent.CompletionStage;
@@ -20,7 +15,7 @@ public class CartKafkaListener {
 
     private final CartService cartService;
 
-    //@Incoming("carts-in")
+   /*@Incoming("carts-in")
     public void onMessage(Cart cart) {
         cartService.processCart(cart);
     }
@@ -34,14 +29,13 @@ public class CartKafkaListener {
         return cart;
     }
 
-    //@Incoming("carts-in")
+    @Incoming("carts-in")
     public void processBatch(List<Cart> carts) {
         cartService.processBatch(carts);
     }
 
 
-
-    //@Incoming("carts-in")
+    @Incoming("carts-in")
     public CompletionStage<Void> processWithAck(Message<Cart> message) {
         try {
             cartService.processCart(message.getPayload());
@@ -52,14 +46,14 @@ public class CartKafkaListener {
     }
 
 
-    //@Incoming("carts-in")
+    @Incoming("carts-in")
     public Uni<Void> processAsync(Cart cart) {
         return Uni.createFrom().item(cart)
                   .onItem().transform(this::processCart)
                   .onFailure().recoverWithItem(this::handleError);
     }
 
-    //@Incoming("carts-in")
+    @Incoming("carts-in")
     public Uni<Void> processRawMessage(KafkaRecord<String, String> record) {
         String key = record.getKey();
         String value = record.getPayload();
@@ -67,7 +61,7 @@ public class CartKafkaListener {
 
         return null;
     }
-
+*/
 
     private Void handleError() {
 
