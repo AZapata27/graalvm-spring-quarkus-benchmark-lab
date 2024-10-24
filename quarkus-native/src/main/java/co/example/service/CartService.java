@@ -38,4 +38,11 @@ public class CartService {
     public void delete(Long id) {
         cartRepository.deleteById(id);
     }
+
+    public void processCart(Cart cart) {
+    }
+
+    public void processBatch(List<Cart> carts) {
+
+    }
 }
