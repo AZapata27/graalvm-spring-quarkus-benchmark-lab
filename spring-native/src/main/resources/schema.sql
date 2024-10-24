@@ -8,8 +8,7 @@ CREATE TABLE IF NOT EXISTS products (
 
 -- Crear tabla "carts" si no existe
 CREATE TABLE IF NOT EXISTS carts (
-                                     id SERIAL PRIMARY KEY,
-                                     user_id BIGINT NOT NULL
+                                     id SERIAL PRIMARY KEY
 );
 
 -- Crear tabla "cart_items" si no existe

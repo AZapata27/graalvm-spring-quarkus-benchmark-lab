@@ -1,0 +1,12 @@
+###
+POST http://localhost:8080/carts
+Content-Type: application/json
+
+{
+  "id": 999
+}
+
+###
+GET http://localhost:8080/carts
+
+###

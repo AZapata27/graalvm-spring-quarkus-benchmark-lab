@@ -12,10 +12,10 @@ INSERT INTO products (id, name, price, description) VALUES
                                                         (5, 'Product 5', 5.99, 'Description of Product 5');
 
 -- Insertar datos en la tabla "carts"
-INSERT INTO carts (id, user_id) VALUES
-                                    (1, 1),
-                                    (2, 2),
-                                    (3, 3);
+INSERT INTO carts (id) VALUES
+                                    (1),
+                                    (2),
+                                    (3);
 
 -- Insertar datos en la tabla "cart_items"
 INSERT INTO cart_items (id, product_id, cart_id, quantity) VALUES
