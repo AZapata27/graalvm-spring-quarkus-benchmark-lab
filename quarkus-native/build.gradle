@@ -17,6 +17,8 @@ dependencies {
     implementation 'io.quarkus:quarkus-arc'
     implementation 'io.quarkus:quarkus-hibernate-orm'
     testImplementation 'io.quarkus:quarkus-junit5'
+    testImplementation 'io.quarkus:quarkus-junit5-mockito'
+    testImplementation 'io.quarkus:quarkus-jdbc-h2'
     testImplementation 'io.rest-assured:rest-assured'
 
     compileOnly group: 'org.projectlombok', name: 'lombok', version: '1.18.34'

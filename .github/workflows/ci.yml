@@ -1,0 +1,53 @@
+name: CI
+
+on:
+  push:
+    branches: [master]
+  pull_request:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  build:
+    name: ${{ matrix.project }} (JVM)
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    strategy:
+      fail-fast: false
+      matrix:
+        project:
+          - quarkus-native
+          - quarkus-reactive-native
+          - spring-native
+          - spring-webflux-native
+    defaults:
+      run:
+        working-directory: ${{ matrix.project }}
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up JDK 21
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '21'
+          cache: gradle
+          cache-dependency-path: |
+            ${{ matrix.project }}/*.gradle*
+            ${{ matrix.project }}/gradle.properties
+            ${{ matrix.project }}/gradle/wrapper/gradle-wrapper.properties
+
+      - name: Build and test (JVM mode)
+        run: ./gradlew build --no-daemon
+
+      - name: Upload test reports
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: test-reports-${{ matrix.project }}
+          path: ${{ matrix.project }}/build/reports/tests/

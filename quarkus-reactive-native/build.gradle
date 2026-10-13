@@ -15,6 +15,7 @@ dependencies {
     implementation 'io.quarkus:quarkus-reactive-pg-client'
 
     testImplementation 'io.quarkus:quarkus-junit5'
+    testImplementation 'io.quarkus:quarkus-junit5-mockito'
     testImplementation 'io.rest-assured:rest-assured'
 
     compileOnly group: 'org.projectlombok', name: 'lombok', version: '1.18.34'

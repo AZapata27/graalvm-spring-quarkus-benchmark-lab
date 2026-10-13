@@ -1,5 +1,7 @@
 # GraalVM Spring Quarkus Benchmark
 
+[![CI](https://github.com/AZapata27/graalvm-spring-quarkus-benchmark-lab/actions/workflows/ci.yml/badge.svg?branch=master)](https://github.com/AZapata27/graalvm-spring-quarkus-benchmark-lab/actions/workflows/ci.yml)
+
 This repository showcases Spring and Quarkus projects implementing GraalVM native compilation, with performance comparisons against traditional JVM versions.
 
 ## Overview
@@ -13,6 +15,42 @@ The goal of this project is to evaluate the benefits and challenges of native im
 - **[spring-native](./spring-native)**: Adds support for Spring Native with GraalVM, allowing the application to be compiled and run as a native binary, improving startup time and memory usage.
 - **[spring-webflux-native](./spring-webflux-native)**: Introduces reactive programming with Spring WebFlux, including reactive endpoints using Flux and Mono, a reactive repository with R2DBC, and Flyway for database migrations, enhancing the application's reactive capabilities and ensuring smooth database migrations.
 
+
+## Architecture
+
+The same cart API (CRUD over `carts`, backed by PostgreSQL) is implemented four times, once per stack. Each implementation is built both as a JVM jar and as a GraalVM native image, and the two variants are compared on startup time and memory usage.
+
+```mermaid
+flowchart LR
+    client([HTTP client / load generator])
+
+    subgraph impl[Same cart API, four implementations]
+        mvc["spring-native<br/>Spring MVC + Spring Data JPA<br/>/api/carts"]
+        flux["spring-webflux-native<br/>Spring WebFlux + Spring Data R2DBC<br/>/carts, /carts/{id}/items"]
+        qrest["quarkus-native<br/>Quarkus REST + Hibernate ORM Panache<br/>/carts"]
+        qreact["quarkus-reactive-native<br/>Quarkus REST + Hibernate Reactive Panache<br/>/carts"]
+    end
+
+    db[(PostgreSQL<br/>docker-compose.yml)]
+
+    subgraph build[Build targets per implementation]
+        jvm[JVM jar<br/>Gradle build]
+        native[GraalVM native image<br/>nativeCompile / Quarkus native]
+    end
+
+    metrics[[Startup time and memory usage]]
+
+    client --> mvc & flux & qrest & qreact
+    mvc -- JDBC --> db
+    qrest -- JDBC --> db
+    flux -- R2DBC --> db
+    qreact -- reactive PG client --> db
+    impl --> jvm & native
+    jvm --> metrics
+    native --> metrics
+```
+
+CI (`.github/workflows/ci.yml`) builds and tests every implementation in JVM mode; tests use in-memory H2 or mocks, so no database is required. Native images are compiled on demand by the `Native image` workflow (`.github/workflows/native.yml`).
 
 ## Metrics
 
