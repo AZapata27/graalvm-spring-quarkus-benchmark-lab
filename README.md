@@ -1,6 +1,6 @@
 # GraalVM Spring Quarkus Benchmark
 
-[![CI](https://github.com/AZapata27/graalvm-spring-quarkus-benchmark-lab/actions/workflows/ci.yml/badge.svg?branch=master)](https://github.com/AZapata27/graalvm-spring-quarkus-benchmark-lab/actions/workflows/ci.yml)
+[![CI](https://github.com/AZapata27/graalvm-spring-quarkus-benchmark-lab/actions/workflows/ci.yml/badge.svg?branch=master)](https://github.com/AZapata27/graalvm-spring-quarkus-benchmark-lab/actions/workflows/ci.yml) [![OpenSSF Scorecard](https://api.scorecard.dev/projects/github.com/AZapata27/graalvm-spring-quarkus-benchmark-lab/badge)](https://scorecard.dev/viewer/?uri=github.com/AZapata27/graalvm-spring-quarkus-benchmark-lab)
 
 This repository showcases Spring and Quarkus projects implementing GraalVM native compilation, with performance comparisons against traditional JVM versions.
 
