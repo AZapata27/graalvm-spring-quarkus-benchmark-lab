@@ -1,6 +1,8 @@
 package co.example.resource;
 
 import co.example.model.Cart;
+import co.example.model.CartItem;
+import co.example.model.Product;
 import co.example.repository.CartRepository;
 import io.quarkus.narayana.jta.QuarkusTransaction;
 import io.quarkus.test.junit.QuarkusTest;
@@ -9,7 +11,11 @@ import jakarta.inject.Inject;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import static io.restassured.RestAssured.given;
+import static org.hamcrest.Matchers.empty;
 import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.hasItem;
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -27,7 +33,11 @@ class CartResourceTest {
 
     @BeforeEach
     void cleanDatabase() {
-        QuarkusTransaction.requiringNew().run(() -> cartRepository.deleteAll());
+        QuarkusTransaction.requiringNew().run(() -> {
+            cartRepository.getEntityManager().createQuery("delete from CartItem").executeUpdate();
+            cartRepository.deleteAll();
+            cartRepository.getEntityManager().createQuery("delete from Product").executeUpdate();
+        });
     }
 
     private Long persistCart() {
@@ -87,13 +97,75 @@ class CartResourceTest {
     void updateExistingCartReturns200() {
         Long id = persistCart();
 
-        // "items" must be sent: Cart.items uses orphanRemoval, so merging a null collection is rejected by Hibernate.
         given()
                 .contentType(ContentType.JSON)
                 .body("{\"items\": []}")
                 .when().put("/carts/{id}", id)
                 .then()
                 .statusCode(200);
+    }
+
+    @Test
+    void updateWithoutItemsReturns200() {
+        Long id = persistCart();
+
+        // PUT replaces the whole cart: a body without "items" means an empty cart, same as POST /carts with "{}".
+        given()
+                .contentType(ContentType.JSON)
+                .body("{}")
+                .when().put("/carts/{id}", id)
+                .then()
+                .statusCode(200);
+
+        given()
+                .when().get("/carts/{id}", id)
+                .then()
+                .statusCode(200)
+                .body("items", empty());
+    }
+
+    @Test
+    void updateWithNullItemsReturns200() {
+        Long id = persistCart();
+
+        given()
+                .contentType(ContentType.JSON)
+                .body("{\"items\": null}")
+                .when().put("/carts/{id}", id)
+                .then()
+                .statusCode(200);
+    }
+
+    @Test
+    void updateWithoutItemsRemovesExistingItems() {
+        Long id = QuarkusTransaction.requiringNew().call(() -> {
+            Product product = new Product();
+            product.setName("Monitor");
+            product.setPrice(199.0);
+            cartRepository.getEntityManager().persist(product);
+
+            Cart cart = new Cart();
+            CartItem item = new CartItem();
+            item.setProduct(product);
+            item.setCart(cart);
+            item.setQuantity(2);
+            cart.setItems(new ArrayList<>(List.of(item)));
+            cartRepository.persist(cart);
+            return cart.getId();
+        });
+
+        given()
+                .contentType(ContentType.JSON)
+                .body("{}")
+                .when().put("/carts/{id}", id)
+                .then()
+                .statusCode(200);
+
+        assertEquals(0L, QuarkusTransaction.requiringNew().call(
+                () -> cartRepository.getEntityManager()
+                        .createQuery("select count(i) from CartItem i where i.cart.id = :id", Long.class)
+                        .setParameter("id", id)
+                        .getSingleResult()));
     }
 
     @Test
