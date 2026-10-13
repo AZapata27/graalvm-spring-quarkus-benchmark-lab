@@ -36,8 +36,11 @@ repositories {
 dependencies {
     implementation 'org.springframework.boot:spring-boot-starter-data-r2dbc'
     implementation 'org.springframework.boot:spring-boot-starter-webflux'
+    // Flyway migra por JDBC (no soporta R2DBC): necesita spring-jdbc para que Spring Boot
+    // auto-configure Flyway a partir de spring.flyway.url, y el driver JDBC de PostgreSQL.
     implementation 'org.flywaydb:flyway-core'
-    runtimeOnly group: 'org.flywaydb', name: 'flyway-database-postgresql', version: '10.17.0'
+    implementation 'org.springframework:spring-jdbc'
+    runtimeOnly 'org.flywaydb:flyway-database-postgresql'
     compileOnly 'org.projectlombok:lombok'
     developmentOnly 'org.springframework.boot:spring-boot-devtools'
     developmentOnly 'org.springframework.boot:spring-boot-docker-compose'
@@ -47,6 +50,7 @@ dependencies {
     testImplementation 'org.springframework.boot:spring-boot-starter-test'
     testImplementation 'io.projectreactor:reactor-test'
     testRuntimeOnly 'io.r2dbc:r2dbc-h2'
+    testRuntimeOnly 'com.h2database:h2'
     testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
 }
 
