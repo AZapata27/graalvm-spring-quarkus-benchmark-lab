@@ -1,0 +1,42 @@
+name: Native image
+
+# GraalVM native compilation is slow, so it is run on demand only and is not a required check.
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  native:
+    name: ${{ matrix.project }} (native)
+    runs-on: ubuntu-latest
+    timeout-minutes: 60
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - project: quarkus-native
+            task: build -x test -Dquarkus.native.enabled=true -Dquarkus.package.jar.enabled=false
+          - project: quarkus-reactive-native
+            task: build -x test -Dquarkus.native.enabled=true -Dquarkus.package.jar.enabled=false
+          - project: spring-native
+            task: nativeCompile
+          - project: spring-webflux-native
+            task: nativeCompile
+    defaults:
+      run:
+        working-directory: ${{ matrix.project }}
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up GraalVM for JDK 21
+        uses: graalvm/setup-graalvm@v1
+        with:
+          java-version: '21'
+          distribution: graalvm
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          cache: gradle
+
+      - name: Compile native image
+        run: ./gradlew ${{ matrix.task }} --no-daemon

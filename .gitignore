@@ -31,3 +31,6 @@ build/
 
 /spring-graalvm/.gradle/
 /quarkus-graalvm/.gradle/
+
+# Keep the Gradle wrapper jar of every subproject under version control
+!**/gradle/wrapper/gradle-wrapper.jar
