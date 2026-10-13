@@ -4,14 +4,19 @@ name: Native image
 on:
   workflow_dispatch:
 
-permissions:
-  contents: read
+permissions: {}
+
+concurrency:
+  group: native-${{ github.ref }}
+  cancel-in-progress: false
 
 jobs:
   native:
     name: ${{ matrix.project }} (native)
     runs-on: ubuntu-latest
     timeout-minutes: 60
+    permissions:
+      contents: read
     strategy:
       fail-fast: false
       matrix:
@@ -26,17 +31,31 @@ jobs:
             task: nativeCompile
     defaults:
       run:
+        shell: bash
         working-directory: ${{ matrix.project }}
     steps:
-      - uses: actions/checkout@v4
+      - name: Harden runner
+        uses: step-security/harden-runner@ccd8616d44fd3846e67624a50d5aad6d37bf2d25 # v2.22.1
+        with:
+          egress-policy: audit
+
+      - name: Check out repository
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
 
       - name: Set up GraalVM for JDK 21
-        uses: graalvm/setup-graalvm@v1
+        uses: graalvm/setup-graalvm@27b360dbb857524eaf0b4c4cef364d38e5b4f173 # v1.6.7
         with:
           java-version: '21'
           distribution: graalvm
-          github-token: ${{ secrets.GITHUB_TOKEN }}
+          github-token: ${{ github.token }}
           cache: gradle
 
       - name: Compile native image
-        run: ./gradlew ${{ matrix.task }} --no-daemon
+        env:
+          GRADLE_TASK: ${{ matrix.task }}
+        run: |
+          set -f   # word-split GRADLE_TASK into arguments without glob expansion
+          # shellcheck disable=SC2086
+          ./gradlew ${GRADLE_TASK} --no-daemon
